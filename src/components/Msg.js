@@ -24,11 +24,11 @@ class Msg extends React.Component
     }
 
     componentDidMount = ()=>{
-        axios.post('http://192.168.1.214:3000/list',{data:this.state.user}).then(res=>{
+        axios.post('https://ashacharan.azurewebsites.net/list',{data:this.state.user}).then(res=>{
             console.log(res);
             this.setState({li:res.data});
             console.log(this.state.li);
-            axios.post('http://192.168.1.214:3000/userslist',{data:this.state.user}).then(result=>{
+            axios.post('https://ashacharan.azurewebsites.net/userslist',{data:this.state.user}).then(result=>{
             this.setState({userslist:result.data})    
             console.log(result);
 
@@ -74,6 +74,7 @@ class Msg extends React.Component
         fire.database().ref().child(x).on('value',snapshot =>
         {
             console.log('msg snapshot loki vacham');
+            this.setState({chat:[]})
             if(snapshot.val()!=null)
             {
                 var x = Object.keys(snapshot.val())
@@ -107,13 +108,13 @@ class Msg extends React.Component
         console.log(x);
         if(x!=null)
         {
-            axios.post('http://192.168.1.214:3000/validate',{add:x,me:this.state.user}).then(res =>{
+            axios.post('https://ashacharan.azurewebsites.net/validate',{add:x,me:this.state.user}).then(res =>{
             console.log(res);
-                axios.post('http://192.168.1.214:3000/list',{data:this.state.user}).then(res=>{
+                axios.post('https://ashacharan.azurewebsites.net/list',{data:this.state.user}).then(res=>{
                     console.log(res);
                     this.setState({li:res.data});
                     console.log(this.state.li);
-                    axios.post('http://192.168.1.214:3000/userslist',{data:this.state.user}).then(result=>{
+                    axios.post('https://ashacharan.azurewebsites.net/userslist',{data:this.state.user}).then(result=>{
                     this.setState({userslist:result.data})    
                     console.log(result);
                 })
@@ -128,7 +129,7 @@ class Msg extends React.Component
       }
     getMostRecentUsers = ()=>{
         console.log("code for getting most recent users");
-        axios.post('http://192.168.1.214:3000/userslist',{data:this.state.user}).then(result=>{
+        axios.post('https://ashacharan.azurewebsites.net/userslist',{data:this.state.user}).then(result=>{
                     this.setState({userslist:result.data})    
                     console.log(result);
                 })

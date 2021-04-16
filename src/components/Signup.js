@@ -21,7 +21,7 @@ class Signup extends React.Component
         console.log("raja nithin varma");
         if(this.state.password == this.state.cpassword)
         {
-            axios.post('http://192.168.1.214:3000/user',{data: this.state}).then(
+            axios.post('https://ashacharan.azurewebsites.net/user',{data: this.state}).then(
                 res =>{
                     console.log(res);
                 }
