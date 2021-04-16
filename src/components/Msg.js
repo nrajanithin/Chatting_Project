@@ -58,7 +58,7 @@ class Msg extends React.Component
         this.setState({[e.target.name]:e.target.value});
     }
     handleDivClick = (x,i)=>{
-        console.log("div click vachindhi ee msg");
+        console.log("div click vachindhi msg");
         this.setState({ref:1})
         this.setState({database:x});
         if(this.state.flag != '')
