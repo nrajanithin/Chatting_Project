@@ -170,7 +170,7 @@ class Msg extends React.Component
                     {
                         this.state.database=='' ? <div style={{alignItems:'center',textAlign:'center',color:'red'}}>
                             <img style={{width:'80%'}} src="https://raw.githubusercontent.com/nrajanithin/mern-client/master/src/team.png" />
-                            <h1>Welcome to DINESH ASHA CHAT!!!</h1>
+                            <h1>Welcome to DINESH-ASHA CHAT!!!</h1>
                         </div> : <div>
                         <div id="chatt" style={{height:'93vh',overflow:'scroll',overflowX:'hidden',scrollBehavior:'smooth'}}>
                         {
