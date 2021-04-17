@@ -71,10 +71,11 @@ class Msg extends React.Component
         ele.style.backgroundColor = 'green'
         this.setState({flag:i})
         console.log(i);
+        this.setState({chat:[]})
         fire.database().ref().child(x).on('value',snapshot =>
         {
             console.log('msg snapshot loki vacham');
-            this.setState({chat:[]})
+            
             if(snapshot.val()!=null)
             {
                 var x = Object.keys(snapshot.val())
