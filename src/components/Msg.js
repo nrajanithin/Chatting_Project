@@ -17,8 +17,10 @@ class Msg extends React.Component
             user: this.props.location.state.data,
             database : '',
             li : [],
+            snapshot:[],
             chat:[],
             userslist:[],
+            msg_length:[],
             flag:''
         };
     }
@@ -28,12 +30,24 @@ class Msg extends React.Component
             console.log(res);
             this.setState({li:res.data});
             console.log(this.state.li);
+            var x = this.state.li;
+            var l=[];
+            fire.database().ref().on('value',snapshot=>{
+                console.log(snapshot.val())
+                this.setState({snapshot:snapshot.val()})
+            })
+            x.map((a,i)=>{
+                console.log(a);
+                console.log(this.state.snapshot[a.grp]);
+            })
             axios.post('https://ashacharan.azurewebsites.net/userslist',{data:this.state.user}).then(result=>{
             this.setState({userslist:result.data})    
             console.log(result);
 
         })
         })
+        
+        
     }
     handleKeyPress = (e)=>{
         if(e.key === 'Enter'){
