@@ -20,7 +20,8 @@ class Msg extends React.Component
             snapshot:[],
             chat:[],
             userslist:[],
-            msg_length:[],
+            temp1:[],
+            temp2:[],
             flag:''
         };
     }
@@ -32,21 +33,52 @@ class Msg extends React.Component
             console.log(this.state.li);
             var x = this.state.li;
             var l=[];
-            fire.database().ref().on('value',snapshot=>{
+            fire.database().ref().on('child_changed',snapshot=>{
                 console.log(snapshot.val())
+                console.log(snapshot.ref.path.pieces_[0])
+                var x = snapshot.ref.path.pieces_[0];
+                console.log(this.state.li);
+                console.log(this.state.database);
+                console.log(x);
+                if(this.state.database != x)
+                {
+                    if(this.state.li.filter(ra => ra.grp == x).length > 0)
+                    {
+                        console.log(this.state.li.filter(ra => ra.grp == x)[0].rec)
+                    var ele = document.getElementById(this.state.li.filter(ra => ra.grp == x)[0].rec)
+                    ele.style.backgroundColor = 'orange'
+                    console.log("thappu mama");
+                    }
+                    
+                }
+                
                 this.setState({snapshot:snapshot.val()})
             })
-            x.map((a,i)=>{
-                console.log(a);
-                console.log(this.state.snapshot[a.grp]);
-            })
+            // x.map((a,i)=>{
+            //     console.log(a.grp);
+            //     console.log(this.state.snapshot[a.grp]);
+            //     if(this.state.snapshot[a.grp]==null)
+            //     {
+            //         console.log("0");
+            //         var y = {group:[a.grp],length:0};
+            //         l.push(y);
+            //     }
+            //     else{
+            //         var x = {group:[a.grp],length:Object.keys(this.state.snapshot[a.grp]).length}
+            //         console.log(Object.keys(this.state.snapshot[a.grp]).length);
+            //         l.push(x);
+            //     }
+            // })
+            // if(this.state.temp1.length == 0)
+            // {
+            //     this.setState({temp2:l})
+            // }
             axios.post('https://ashacharan.azurewebsites.net/userslist',{data:this.state.user}).then(result=>{
             this.setState({userslist:result.data})    
             console.log(result);
 
         })
         })
-        
         
     }
     handleKeyPress = (e)=>{
@@ -198,7 +230,6 @@ class Msg extends React.Component
                                     }
                                     else{
                                         return <div key={id} style={{textAlign:'justify',display:'block',clear:'both',float:'left',padding:'20px',marginBottom:'5px',backgroundColor:'black',flexWrap:'wrap',borderRadius:'12px',marginRight:'30%'}}>
-                                        <small style={{color:'white'}}>{this.state.chat[id].username}</small>
                                         <h5 style={{color:'white'}}>{this.state.chat[id].msg}</h5>
                                         </div>
                                     }
