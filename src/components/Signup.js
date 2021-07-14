@@ -15,13 +15,11 @@ class Signup extends React.Component
     }
     handleInfo = (e)=>{
         this.setState({[e.target.name]:e.target.value});
-        console.log(this.state);
     }
     handleRegister = ()=>{
-        console.log("raja nithin varma");
         if(this.state.password == this.state.cpassword)
         {
-            axios.post('https://ashacharan.azurewebsites.net/user',{data: this.state}).then(
+            axios.post('http://localhost:5000/user',{data: this.state}).then(
                 res =>{
                     console.log(res);
                 }

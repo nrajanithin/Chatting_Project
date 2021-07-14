@@ -13,9 +13,7 @@ class Login extends React.Component
     }
     handleLogin = (e)=>{
         e.preventDefault();
-            axios.post('https://ashacharan.azurewebsites.net/login',this.state).then(result=>{
-                console.log(result);
-                console.log(result.data.length);
+            axios.post('http://localhost:5000/login',this.state).then(result=>{
                 if(result.data.length > 0)
                 {
                     this.props.history.push({pathname:'/msg', state:{ data: this.state.un }});
@@ -25,7 +23,6 @@ class Login extends React.Component
     
     handleCred = (e)=>{
         this.setState({[e.target.name]:e.target.value});
-        console.log(this.state);
     }
    render()
    {

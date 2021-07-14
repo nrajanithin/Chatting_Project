@@ -26,56 +26,28 @@ class Msg extends React.Component
         };
     }
 
-    componentDidMount = ()=>{
-        axios.post('https://ashacharan.azurewebsites.net/list',{data:this.state.user}).then(res=>{
-            console.log(res);
-            this.setState({li:res.data});
-            console.log(this.state.li);
+    componentDidMount = async()=>{
+            axios.post('http://localhost:5000/list',{data:this.state.user}).then(async(res)=>{
+            await this.setState({li:res.data});
             var x = this.state.li;
             var l=[];
             fire.database().ref().on('child_changed',snapshot=>{
-                console.log(snapshot.val())
-                console.log(snapshot.ref.path.pieces_[0])
                 var x = snapshot.ref.path.pieces_[0];
-                console.log(this.state.li);
-                console.log(this.state.database);
-                console.log(x);
                 if(this.state.database != x)
                 {
                     if(this.state.li.filter(ra => ra.grp == x).length > 0)
                     {
-                        console.log(this.state.li.filter(ra => ra.grp == x)[0].rec)
-                    var ele = document.getElementById(this.state.li.filter(ra => ra.grp == x)[0].rec)
-                    ele.style.backgroundColor = 'orange'
-                    console.log("thappu mama");
+                        var ele = document.getElementById(this.state.li.filter(ra => ra.grp == x)[0].rec)
+                        if(ele != null)
+                        {
+                            ele.style.backgroundColor = 'orange'
+                        }
                     }
                     
                 }
-                
-                this.setState({snapshot:snapshot.val()})
             })
-            // x.map((a,i)=>{
-            //     console.log(a.grp);
-            //     console.log(this.state.snapshot[a.grp]);
-            //     if(this.state.snapshot[a.grp]==null)
-            //     {
-            //         console.log("0");
-            //         var y = {group:[a.grp],length:0};
-            //         l.push(y);
-            //     }
-            //     else{
-            //         var x = {group:[a.grp],length:Object.keys(this.state.snapshot[a.grp]).length}
-            //         console.log(Object.keys(this.state.snapshot[a.grp]).length);
-            //         l.push(x);
-            //     }
-            // })
-            // if(this.state.temp1.length == 0)
-            // {
-            //     this.setState({temp2:l})
-            // }
-            axios.post('https://ashacharan.azurewebsites.net/userslist',{data:this.state.user}).then(result=>{
-            this.setState({userslist:result.data})    
-            console.log(result);
+            axios.post('http://localhost:5000/userslist',{data:this.state.user}).then(async(result)=>{
+            await this.setState({userslist:result.data})    
 
         })
         })
@@ -83,10 +55,10 @@ class Msg extends React.Component
     }
     handleKeyPress = (e)=>{
         if(e.key === 'Enter'){
-            console.log('enter press here! ')
-            console.log(this.state.msg);
+            const timestamp = Date.now();
+            const t = new Intl.DateTimeFormat('en-US', {month: '2-digit',day: '2-digit', hour: '2-digit', minute: '2-digit'}).format(timestamp);
             fire.database().ref().child(this.state.database).push(
-                {name:this.state.user,msg:this.state.msg},
+                {name:this.state.user,msg:this.state.msg,time:t},
                 err=>
                 {
                     if(err)
@@ -96,97 +68,89 @@ class Msg extends React.Component
                 }
             )
             this.setState({msg:''})
-            console.log("msg velli vundali");
           }
     }
     handleMessage = (e)=>{
-        console.log(e.target.value); 
         this.setState({[e.target.name]:e.target.value});
     }
-    handleDivClick = (x,i)=>{
-        console.log("div click vachindhi msg");
+    handleDivClick = async(x,i)=>{
         this.setState({ref:1})
-        this.setState({database:x});
+        await this.setState({database:x});
         if(this.state.flag != '')
         {
             var el = document.getElementById(this.state.flag);
             el.style.backgroundColor = 'red'
-            console.log(this.state.flag);
         }
         var ele = document.getElementById(i)
         ele.style.backgroundColor = 'green'
-        this.setState({flag:i})
-        console.log(i);
-        this.setState({chat:[]})
-        fire.database().ref().child(x).on('value',snapshot =>
+        await this.setState({flag:i})
+        await this.setState({chat:[]})
+        fire.database().ref().child(this.state.database).on('value',async(snapshot) =>
         {
-            console.log('msg snapshot loki vacham');
-            
             if(snapshot.val()!=null)
             {
-                var x = Object.keys(snapshot.val())
-                console.log(x.length);
+                var y = Object.keys(snapshot.val())
                 var chat_length = Object.keys(this.state.chat)
-                console.log(chat_length.length)
-                console.log(snapshot.val()[x[x.length-1]].name)
-                console.log(snapshot.val())
-                this.setState({chat: {...snapshot.val()}});
-                console.log(this.state);
-                
+                if(x == this.state.database)
+                {
+                    await this.setState({chat: {...snapshot.val()}});
+                }
                 let interval = window.setInterval(function(){
                     var elem = document.getElementById('chatt');
-                    elem.scrollTop = elem.scrollHeight;
+                    if(elem != null)
+                    {
+                        elem.scrollTop = elem.scrollHeight;
+                    }
                     window.clearInterval(interval);
                 },1000);
                 if((x.length!=chat_length.length) && (this.state.ref!=1))
                 {
-                        console.log("bigileyyyyy");
                         this.playAudio();
                 }
-                this.setState({ref:0})
-                this.forceUpdate();
+                await this.setState({ref:0})
             }
         });
-        console.log("raja nithin flag");
     }
     handleDropChange=(x)=>
     {
-        
-        console.log(x);
         if(x!=null)
         {
-            axios.post('https://ashacharan.azurewebsites.net/validate',{add:x,me:this.state.user}).then(res =>{
-            console.log(res);
-                axios.post('https://ashacharan.azurewebsites.net/list',{data:this.state.user}).then(res=>{
-                    console.log(res);
+            axios.post('http://localhost:5000/validate',{add:x,me:this.state.user}).then(res =>{
+                axios.post('http://localhost:5000/list',{data:this.state.user}).then(res=>{
                     this.setState({li:res.data});
-                    console.log(this.state.li);
-                    axios.post('https://ashacharan.azurewebsites.net/userslist',{data:this.state.user}).then(result=>{
+                    axios.post('http://localhost:5000/userslist',{data:this.state.user}).then(result=>{
                     this.setState({userslist:result.data})    
-                    console.log(result);
                 })
                 })
             })
         }
         
     }
+    refreshRec()
+    {
+        axios.post('http://localhost:5000/list',{data:this.state.user}).then(async(res)=>{
+            await this.setState({li:res.data});
+        })
+    }
     playAudio() {
         const audioEl = document.getElementsByClassName("audio-element")[0]
         audioEl.play()
       }
     getMostRecentUsers = ()=>{
-        console.log("code for getting most recent users");
-        axios.post('https://ashacharan.azurewebsites.net/userslist',{data:this.state.user}).then(result=>{
+        axios.post('http://localhost:5000/userslist',{data:this.state.user}).then(result=>{
                     this.setState({userslist:result.data})    
-                    console.log(result);
                 })
     }
     render()
     {
         return(
-            <div style={{marginTop:'3px',display:'inline-block',width:'100%'}}>
-                <div style={{float:'left',width:'20%',borderStyle:'solid'}}>
-                    <div onClick={this.getMostRecentUsers} style={{padding:'5px',backgroundColor:'whitesmoke'}}>
+            <div style={{display:'inline-block',width:'100%'}}>
+                <div style={{display:'flex',justifyContent:'space-between',width:'100%',height:'6vh',backgroundColor:'black',color:'whitesmoke',marginTop:'0px'}}>
+                    <h4 style={{margin:'0px',paddingTop:'1%'}}>Welcome {this.state.user} !!</h4>
+                    <button onClick={()=>this.props.history.push('/')} style={{float:'right'}} class="btn btn-warning">Logout</button>
+                </div>
+                <div style={{float:'left',width:'20%',borderStyle:'solid',height:'94vh'}}>
+                    <div onClick={this.getMostRecentUsers} style={{display:'flex',padding:'5px',backgroundColor:'whitesmoke'}}>
                     <Autocomplete
                         id="combo-box-demo"
                         
@@ -198,12 +162,16 @@ class Msg extends React.Component
                         style={{ width: '100%' }}
                         renderInput={(params) => <TextField {...params}  label="Find Friends" variant="outlined" />}
                         />
+                        <svg onClick={()=>this.refreshRec()} style={{backgroundColor:'grey',marginLeft:'1px',borderRadius:'100px'}} xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                        <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                        </svg>
                     </div>
-                    <div  id="raju"  style={{height:'92.5vh',marginTop:'5px',padding:'5px'}}>
+                    <div  id="raju"  style={{marginTop:'5px',padding:'5px'}}>
                         {
                             this.state.li.map((r,i)=>(
-                                <div onClick={()=>this.handleDivClick(r.grp,r.rec)} id={r.rec} key={i} style={{marginTop:'5px',borderRadius:'5px',borderBottomRightRadius:'100px',borderTopRightRadius:'100px',padding:'2px',backgroundColor:'red'}}>
-                                    <h3>{r.rec}</h3>
+                                <div onClick={()=>this.handleDivClick(r.grp,r.rec)} id={r.rec} key={i} style={{marginTop:'5px',borderRadius:'10px',padding:'2px',backgroundColor:'red',textAlign:'center'}}>
+                                    <h3 style={{margin:'0',padding:'3px'}}>{r.rec}</h3>
                                 </div>
                             ))
                         }
@@ -213,24 +181,34 @@ class Msg extends React.Component
                     </audio>
                 </div>
                 
-                <div style={{borderTopRightRadius:'20px',borderTopLeftRadius:'20px',width:'79%',height:'99vh',marginRight:'3px',float:'right'}}>
+                <div style={{borderTopRightRadius:'20px',borderTopLeftRadius:'20px',width:'79%',marginRight:'3px',float:'right'}}>
                     {
                         this.state.database=='' ? <div style={{alignItems:'center',textAlign:'center',color:'red'}}>
                             <img style={{width:'80%'}} src="https://raw.githubusercontent.com/nrajanithin/mern-client/master/src/team.png" />
                             <h1>Welcome CHAT!!!</h1>
                         </div> : <div>
-                        <div id="chatt" style={{height:'93vh',overflow:'scroll',overflowX:'hidden',scrollBehavior:'smooth'}}>
+                        <div id="chatt" style={{height:'88vh',marginTop:'2px',overflow:'scroll',overflowX:'hidden',scrollBehavior:'smooth'}}>
                         {
                                 Object.keys(this.state.chat).map(id=>{
                                     if(this.state.chat[id].name == this.state.user)
                                     {
                                         return <div key={id} style={{textAlign:'justify',clear:'both',display:'block',float:'right',padding:'20px',marginBottom:'5px',backgroundColor:'red',flexWrap:'wrap',borderRadius:'12px',marginRight:'10px',marginLeft:'30%'}}>
-                                        <h5 style={{color:'white'}}>{this.state.chat[id].msg}</h5>
+                                            <div>
+                                              <h5 style={{color:'white'}}>{this.state.chat[id].msg}</h5>
+                                            </div>
+                                            <div style={{fontSize:'12px',float:'right',color:'white'}}>
+                                                {this.state.chat[id].time}
+                                            </div>
                                         </div>
                                     }
                                     else{
                                         return <div key={id} style={{textAlign:'justify',display:'block',clear:'both',float:'left',padding:'20px',marginBottom:'5px',backgroundColor:'black',flexWrap:'wrap',borderRadius:'12px',marginRight:'30%'}}>
-                                        <h5 style={{color:'white'}}>{this.state.chat[id].msg}</h5>
+                                            <div>
+                                              <h5 style={{color:'white'}}>{this.state.chat[id].msg}</h5>
+                                            </div>
+                                            <div style={{fontSize:'12px',float:'right',color:'white'}}>
+                                                {this.state.chat[id].time}
+                                            </div>
                                         </div>
                                     }
                                     
